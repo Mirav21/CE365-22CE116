@@ -1,24 +1,27 @@
 #include <bits/stdc++.h>
 #include <fstream>
-
 using namespace std;
 
 bool isInteger(const string &str)
 {
-    try
+    for (char ch : str)
     {
-        // Try converting the string to an integer
-        stoi(str);
-        return true;
+        if (!isdigit(ch))
+            return false;
     }
-    catch (const invalid_argument &e)
-    {
-        return false; // Not a valid integer
-    }
-    catch (const out_of_range &e)
-    {
-        return false; // Number out of range for int type
-    }
+    return !str.empty();
+}
+
+bool isCharLiteral(const string &str)
+{
+    return str.length() == 3 && str[0] == '\'' && str[2] == '\''; // e.g., 'x'
+}
+
+bool isValidIdentifier(const string &str)
+{
+    if (str.empty() || isdigit(str[0]))
+        return false;
+    return regex_match(str, regex("[_a-zA-Z][_a-zA-Z0-9]*"));
 }
 
 int main()
@@ -51,28 +54,27 @@ int main()
 
     string line;
     int line_number = 0;
-
     bool isEndOfComment = false;
+    set<string> symbolTable;
+    vector<string> lexicalErrors;
 
     while (getline(cFile, line))
     {
         line_number++;
         string word = "";
-        size_t i = 0;
         size_t line_length = line.length();
 
-        if (line[i] == '/' && line[i + 1] == '/')
+        if (line[0] == '/' && line[1] == '/')
         {
             continue;
         }
 
         for (size_t j = 0; j < line_length; j++)
         {
-            // Handle block comments
             if (!isEndOfComment && j + 1 < line.length() && line[j] == '/' && line[j + 1] == '*')
             {
                 isEndOfComment = true;
-                j++; // Skip the '*' after '/'
+                j++;
                 continue;
             }
 
@@ -80,90 +82,101 @@ int main()
             {
                 if (j + 1 < line.length() && line[j] == '*' && line[j + 1] == '/')
                 {
-                    isEndOfComment = false; // End of the comment
-                    j++;                    // Skip the '/' after '*'
+                    isEndOfComment = false;
+                    j++;
                 }
-                continue; // Skip the content inside the comment
+                continue;
             }
 
-            // Check for spaces, operators, or punctuation
             if (line[j] == ' ' || find(punctuations.begin(), punctuations.end(), string(1, line[j])) != punctuations.end())
             {
                 if (!word.empty())
                 {
-                    auto it_keywords = find(keywords.begin(), keywords.end(), word);
-                    auto it_operators = find(operators.begin(), operators.end(), word);
-                    auto it_punctuations = find(punctuations.begin(), punctuations.end(), word);
-
-                    if (it_keywords != keywords.end())
+                    if (isInteger(word))
                     {
-                        // cout << "Keyword: " << word << endl;
+                        // Valid Integer
                     }
-                    else if (it_operators != operators.end())
+                    else if (isCharLiteral(word))
                     {
-                        // cout << "Operator: " << word << endl;
-                    }
-                    else if (it_punctuations != punctuations.end())
-                    {
-                        // cout << "Punctuation: " << word << endl;
+                        // Valid Char Literal
                     }
                     else
                     {
-                        // cout << "Other: " << word << endl;
+                        auto it_keywords = find(keywords.begin(), keywords.end(), word);
+                        auto it_operators = find(operators.begin(), operators.end(), word);
+                        auto it_punctuations = find(punctuations.begin(), punctuations.end(), word);
 
-                        if (!isInteger(word))
+                        if (it_keywords == keywords.end() && it_operators == operators.end() && it_punctuations == punctuations.end())
                         {
-                            if (!isalpha(word[0]) || !word[0] != '_')
+                            if (isValidIdentifier(word))
                             {
-                                cout << "line:" << line_number << " " << word << " invalid lexeme" << endl;
+                                symbolTable.insert(word);
+                            }
+                            else
+                            {
+                                lexicalErrors.push_back("line:" + to_string(line_number) + " " + word + " invalid lexeme");
                             }
                         }
-                        else if (!isInteger(word))
-                        {
-                            cout << "line:" << line_number << " " << word << " invalid lexeme" << endl;
-                        }
                     }
-                    word = ""; // Reset word after processing
-                }
-
-                // Handle punctuation as single tokens
-                if (find(punctuations.begin(), punctuations.end(), string(1, line[j])) != punctuations.end())
-                {
-                    // cout << "Punctuation: " << line[j] << endl;
+                    word = "";
                 }
             }
             else
             {
-                word += line[j]; // Accumulate characters for a word
+                word += line[j];
             }
         }
 
-        // After finishing the line, check for the last word
         if (!word.empty())
         {
-            auto it_keywords = find(keywords.begin(), keywords.end(), word);
-            auto it_operators = find(operators.begin(), operators.end(), word);
-            auto it_punctuations = find(punctuations.begin(), punctuations.end(), word);
-
-            if (it_keywords != keywords.end())
+            if (isInteger(word))
             {
-                cout << "Keyword: " << word << endl;
+                // Valid Integer
             }
-            else if (it_operators != operators.end())
+            else if (isCharLiteral(word))
             {
-                cout << "Operator: " << word << endl;
-            }
-            else if (it_punctuations != punctuations.end())
-            {
-                cout << "Punctuation: " << word << endl;
+                // Valid Char Literal
             }
             else
             {
-                cout << "Other: " << word << endl;
+                auto it_keywords = find(keywords.begin(), keywords.end(), word);
+                auto it_operators = find(operators.begin(), operators.end(), word);
+                auto it_punctuations = find(punctuations.begin(), punctuations.end(), word);
+
+                if (it_keywords == keywords.end() && it_operators == operators.end() && it_punctuations == punctuations.end())
+                {
+                    if (isValidIdentifier(word))
+                    {
+                        symbolTable.insert(word);
+                    }
+                    else
+                    {
+                        lexicalErrors.push_back("line:" + to_string(line_number) + " " + word + " invalid lexeme");
+                    }
+                }
             }
         }
     }
 
     cFile.close();
+
+    // Display Lexical Errors
+    if (!lexicalErrors.empty())
+    {
+        cout << "LEXICAL ERRORS" << endl;
+        for (const auto &error : lexicalErrors)
+        {
+            cout << error << endl;
+        }
+    }
+
+    // Display the Symbol Table
+    cout << "\nSYMBOL TABLE ENTRIES" << endl;
+    int count = 1;
+    for (const auto &symbol : symbolTable)
+    {
+        cout << count++ << ") " << symbol << endl;
+    }
+
     return 0;
 }

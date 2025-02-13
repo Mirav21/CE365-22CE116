@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "*.embeddedhtml": "html",
+    "*.html": "django-html",
+    "ostream": "cpp"
+  }
+}
