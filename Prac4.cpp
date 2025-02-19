@@ -1,169 +1,164 @@
-#include <bits/stdc++.h>
+#include <iostream>
 #include <fstream>
-
+#include <sstream>
 using namespace std;
 
-bool isInteger(const string &str)
+// Function for Objective 1: Extract and Print Numbers from Input String
+void extractNumbers()
 {
-    try
+    string input;
+    cout << "Enter the input string: ";
+    getline(cin, input);
+
+    stringstream ss(input);
+    string word;
+
+    cout << "Extracted numbers:" << endl;
+    while (ss >> word)
     {
-        // Try converting the string to an integer
-        stoi(str);
-        return true;
-    }
-    catch (const invalid_argument &e)
-    {
-        return false; // Not a valid integer
-    }
-    catch (const out_of_range &e)
-    {
-        return false; // Number out of range for int type
+        string number = "";
+        for (char ch : word)
+        {
+            if (isdigit(ch))
+            {
+                number += ch;
+            }
+            else if (!number.empty())
+            {
+                cout << number << endl;
+                number = "";
+            }
+        }
+        if (!number.empty())
+        {
+            cout << number << endl;
+        }
     }
 }
 
-int main()
+// Function for Objective 2: Replace "charusat" with "university"
+void replaceCharusat()
 {
-    vector<string> keywords = {
-        "auto", "break", "case", "char", "const", "continue", "default", "do",
-        "double", "else", "enum", "extern", "float", "for", "goto", "if",
-        "inline", "int", "long", "register", "restrict", "return", "short",
-        "signed", "sizeof", "static", "struct", "switch", "typedef", "union",
-        "unsigned", "void", "volatile", "while", "_Alignas", "_Alignof",
-        "_Atomic", "_Bool", "_Complex", "_Generic", "_Imaginary", "_Noreturn",
-        "_Static_assert", "_Thread_local"};
+    string input;
+    cout << "Enter the input string: ";
+    getline(cin, input);
 
-    vector<string> operators = {
-        "+", "-", "*", "/", "%", "++", "--", "=", "+=", "-=", "*=", "/=", "%=",
-        "==", "!=", ">", "<", ">=", "<=", "&&", "||", "!", "&", "|", "^", "~",
-        "<<", ">>", "->", ".", "?:"};
-
-    vector<string> punctuations = {
-        "{", "}", "(", ")", "[", "]", ";", ",", ":", "#", "\\"};
-
-    string filePath = "file.c";
-    ifstream cFile(filePath);
-
-    if (!cFile.is_open())
+    size_t pos = input.find("charusat");
+    while (pos != string::npos)
     {
-        cout << "Error: Could not open the file " << filePath << endl;
-        return 1;
+        input.replace(pos, 8, "university");
+        pos = input.find("charusat", pos + 10);
+    }
+
+    cout << "Modified string: " << input << endl;
+}
+
+// Function for Objective 3: Count Characters, Words, and Lines from Input File
+void countFileStats()
+{
+    ifstream file("input.txt");
+    if (!file.is_open())
+    {
+        cout << "Failed to open the file. Make sure 'input.txt' is present in the same directory." << endl;
+        return;
     }
 
     string line;
-    int line_number = 0;
+    int charCount = 0, wordCount = 0, lineCount = 0;
 
-    bool isEndOfComment = false;
-
-    while (getline(cFile, line))
+    while (getline(file, line))
     {
-        line_number++;
-        string word = "";
-        size_t i = 0;
-        size_t line_length = line.length();
+        lineCount++;
+        charCount += line.length() + 1; // Including newline character
 
-        if (line[i] == '/' && line[i + 1] == '/')
+        stringstream ss(line);
+        string word;
+        while (ss >> word)
         {
-            continue;
-        }
-
-        for (size_t j = 0; j < line_length; j++)
-        {
-            // Handle block comments
-            if (!isEndOfComment && j + 1 < line.length() && line[j] == '/' && line[j + 1] == '*')
-            {
-                isEndOfComment = true;
-                j++; // Skip the '*' after '/'
-                continue;
-            }
-
-            if (isEndOfComment)
-            {
-                if (j + 1 < line.length() && line[j] == '*' && line[j + 1] == '/')
-                {
-                    isEndOfComment = false; // End of the comment
-                    j++;                    // Skip the '/' after '*'
-                }
-                continue; // Skip the content inside the comment
-            }
-
-            // Check for spaces, operators, or punctuation
-            if (line[j] == ' ' || find(punctuations.begin(), punctuations.end(), string(1, line[j])) != punctuations.end())
-            {
-                if (!word.empty())
-                {
-                    auto it_keywords = find(keywords.begin(), keywords.end(), word);
-                    auto it_operators = find(operators.begin(), operators.end(), word);
-                    auto it_punctuations = find(punctuations.begin(), punctuations.end(), word);
-
-                    if (it_keywords != keywords.end())
-                    {
-                        // cout << "Keyword: " << word << endl;
-                    }
-                    else if (it_operators != operators.end())
-                    {
-                        // cout << "Operator: " << word << endl;
-                    }
-                    else if (it_punctuations != punctuations.end())
-                    {
-                        // cout << "Punctuation: " << word << endl;
-                    }
-                    else
-                    {
-                        // cout << "Other: " << word << endl;
-
-                        if (!isInteger(word))
-                        {
-                            if (!isalpha(word[0]) || !word[0] != '_')
-                            {
-                                cout << "line:" << line_number << " " << word << " invalid lexeme" << endl;
-                            }
-                        }
-                        else if (!isInteger(word))
-                        {
-                            cout << "line:" << line_number << " " << word << " invalid lexeme" << endl;
-                        }
-                    }
-                    word = ""; // Reset word after processing
-                }
-
-                // Handle punctuation as single tokens
-                if (find(punctuations.begin(), punctuations.end(), string(1, line[j])) != punctuations.end())
-                {
-                    // cout << "Punctuation: " << line[j] << endl;
-                }
-            }
-            else
-            {
-                word += line[j]; // Accumulate characters for a word
-            }
-        }
-
-        // After finishing the line, check for the last word
-        if (!word.empty())
-        {
-            auto it_keywords = find(keywords.begin(), keywords.end(), word);
-            auto it_operators = find(operators.begin(), operators.end(), word);
-            auto it_punctuations = find(punctuations.begin(), punctuations.end(), word);
-
-            if (it_keywords != keywords.end())
-            {
-                cout << "Keyword: " << word << endl;
-            }
-            else if (it_operators != operators.end())
-            {
-                cout << "Operator: " << word << endl;
-            }
-            else if (it_punctuations != punctuations.end())
-            {
-                cout << "Punctuation: " << word << endl;
-            }
-            else
-            {
-                cout << "Other: " << word << endl;
-            }
+            wordCount++;
         }
     }
 
-    cFile.close();
+    file.close();
+
+    cout << "Characters: " << charCount << endl;
+    cout << "Words: " << wordCount << endl;
+    cout << "Lines: " << lineCount << endl;
+}
+
+// Function for Objective 4: Validate Password
+bool isValidPassword(const string &password)
+{
+    if (password.length() < 9 || password.length() > 15)
+    {
+        return false;
+    }
+
+    bool hasLower = false, hasUpper = false, hasDigit = false, hasSymbol = false;
+    string symbols = "*;#$@";
+
+    for (char ch : password)
+    {
+        if (islower(ch))
+            hasLower = true;
+        else if (isupper(ch))
+            hasUpper = true;
+        else if (isdigit(ch))
+            hasDigit = true;
+        else if (symbols.find(ch) != string::npos)
+            hasSymbol = true;
+    }
+
+    return hasLower && hasUpper && hasDigit && hasSymbol;
+}
+
+void validatePassword()
+{
+    string password;
+    cout << "Enter the password: ";
+    getline(cin, password);
+
+    if (isValidPassword(password))
+    {
+        cout << "Valid password" << endl;
+    }
+    else
+    {
+        cout << "Invalid password" << endl;
+    }
+}
+
+// Main Function
+int main()
+{
+    int choice;
+
+    cout << "Select the objective to run:" << endl;
+    cout << "1. Extract and print numbers from input string" << endl;
+    cout << "2. Replace 'charusat' with 'university' in input text" << endl;
+    cout << "3. Count characters, words, and lines from input file" << endl;
+    cout << "4. Validate password" << endl;
+    cout << "Enter your choice (1-4): ";
+    cin >> choice;
+    cin.ignore(); // Clear the input buffer
+
+    switch (choice)
+    {
+    case 1:
+        extractNumbers();
+        break;
+    case 2:
+        replaceCharusat();
+        break;
+    case 3:
+        countFileStats();
+        break;
+    case 4:
+        validatePassword();
+        break;
+    default:
+        cout << "Invalid choice. Please select between 1 and 4." << endl;
+    }
+
     return 0;
 }
