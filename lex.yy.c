@@ -583,8 +583,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "prac5.l"
-#line 2 "prac5.l"
+#line 1 "Prac5.l"
+#line 2 "Prac5.l"
 #include <stdio.h>
 #include <stdlib.h>
 #line 591 "lex.yy.c"
@@ -809,7 +809,7 @@ YY_DECL
 		}
 
 	{
-#line 24 "prac5.l"
+#line 24 "Prac5.l"
 
 
 #line 816 "lex.yy.c"
@@ -871,158 +871,158 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 26 "prac5.l"
+#line 26 "Prac5.l"
 { printf("Keyword: %s\n", yytext); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 27 "prac5.l"
+#line 27 "Prac5.l"
 { printf("Operator: %s\n", yytext); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 28 "prac5.l"
+#line 28 "Prac5.l"
 { printf("Punctuation: %s\n", yytext); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 29 "prac5.l"
+#line 29 "Prac5.l"
 { printf("Floating Constant: %s\n", yytext); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 30 "prac5.l"
+#line 30 "Prac5.l"
 { printf("Exponential Constant: %s\n", yytext); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 31 "prac5.l"
+#line 31 "Prac5.l"
 { printf("Integer Constant: %s\n", yytext); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 32 "prac5.l"
+#line 32 "Prac5.l"
 { printf("Character: %s\n", yytext); }
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 33 "prac5.l"
+#line 33 "Prac5.l"
 { printf("String: %s\n", yytext); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 34 "prac5.l"
+#line 34 "Prac5.l"
 { printf("Identifier: %s\n", yytext); }
 	YY_BREAK
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 35 "prac5.l"
+#line 35 "Prac5.l"
 { /* Ignore whitespace */ }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 36 "prac5.l"
+#line 36 "Prac5.l"
 { /* Ignore single-line comment */ }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 38 "prac5.l"
+#line 38 "Prac5.l"
 { BEGIN(COMMENT); }
 	YY_BREAK
 
 case 13:
 YY_RULE_SETUP
-#line 41 "prac5.l"
+#line 41 "Prac5.l"
 { BEGIN(INITIAL); }  // Exit comment mode properly
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
-#line 42 "prac5.l"
+#line 42 "Prac5.l"
 { }  // Consume everything except '*'
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 43 "prac5.l"
+#line 43 "Prac5.l"
 { }  // Handle multiple '*' but not "*/"
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 44 "prac5.l"
+#line 44 "Prac5.l"
 { }  // Consume everything else (including newlines)
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 45 "prac5.l"
+#line 45 "Prac5.l"
 { printf("Error: Unterminated comment\n"); yyterminate(); }
 	YY_BREAK
 
 case 17:
 YY_RULE_SETUP
-#line 50 "prac5.l"
+#line 50 "Prac5.l"
 { BEGIN(STRING_DQ); yytext[0] = ' '; }
 	YY_BREAK
 
 case 18:
 YY_RULE_SETUP
-#line 52 "prac5.l"
+#line 52 "Prac5.l"
 { BEGIN(INITIAL); printf("String: %s\n", yytext); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 53 "prac5.l"
+#line 53 "Prac5.l"
 { }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 54 "prac5.l"
+#line 54 "Prac5.l"
 { }
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 55 "prac5.l"
+#line 55 "Prac5.l"
 { printf("Error: Unterminated string\n"); BEGIN(INITIAL); }
 	YY_BREAK
 
 case 22:
 YY_RULE_SETUP
-#line 57 "prac5.l"
+#line 57 "Prac5.l"
 { BEGIN(STRING_SQ); yytext[0] = ' '; }
 	YY_BREAK
 
 case 23:
 YY_RULE_SETUP
-#line 59 "prac5.l"
+#line 59 "Prac5.l"
 { BEGIN(INITIAL); printf("Character: %s\n", yytext); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 60 "prac5.l"
+#line 60 "Prac5.l"
 { }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 61 "prac5.l"
+#line 61 "Prac5.l"
 { }
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 62 "prac5.l"
+#line 62 "Prac5.l"
 { printf("Error: Unterminated character constant\n"); BEGIN(INITIAL); }
 	YY_BREAK
 
 case 27:
 YY_RULE_SETUP
-#line 64 "prac5.l"
+#line 64 "Prac5.l"
 { printf("Error: Invalid token '%s'\n", yytext); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 66 "prac5.l"
+#line 66 "Prac5.l"
 ECHO;
 	YY_BREAK
 #line 1029 "lex.yy.c"
@@ -2032,7 +2032,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 66 "prac5.l"
+#line 66 "Prac5.l"
 
 
 int main(int argc, char **argv) {
